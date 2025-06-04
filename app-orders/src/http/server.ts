@@ -1,17 +1,25 @@
-import { fastify } from "fastify";
-
-import { fastifyCors } from "@fastify/cors";
-import { z } from "zod";
+import fastify from "fastify";
 import {
   serializerCompiler,
   validatorCompiler,
   type ZodTypeProvider,
 } from "fastify-type-provider-zod";
+import { z } from "zod";
+import { channels } from "../broker/channels/index.ts";
+import fastifyCors from "@fastify/cors";
+import { db } from "../db/db-client.ts";
+import { schema } from "../db/schema/index.ts";
+import { randomUUID } from "node:crypto";
+import { dispatchOrderCreated } from "../broker/messages/order-created.ts";
 
 const app = fastify().withTypeProvider<ZodTypeProvider>();
 
 app.setSerializerCompiler(serializerCompiler);
 app.setValidatorCompiler(validatorCompiler);
+
+app.register(fastifyCors, {
+  origin: "*",
+});
 
 app.get("/health", () => {
   return "OK";
@@ -22,14 +30,30 @@ app.post(
   {
     schema: {
       body: z.object({
-        amount: z.number(),
+        amount: z.coerce.number(),
       }),
     },
   },
-  (request, reply) => {
+  async (request, reply) => {
     const { amount } = request.body;
 
     console.log(`[Orders] Order created: ${amount}`);
+
+    const orderId = randomUUID();
+    const costumerId = "280af301-af6d-4a7f-95ac-1a4e2493fac5";
+    await db.insert(schema.orders).values({
+      id: orderId,
+      amount,
+      costumerId: "280af301-af6d-4a7f-95ac-1a4e2493fac5",
+    });
+
+    dispatchOrderCreated({
+      orderId,
+      amount,
+      costumer: {
+        id: costumerId,
+      },
+    });
 
     reply.status(201).send();
   }

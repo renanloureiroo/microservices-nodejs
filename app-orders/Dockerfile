@@ -14,7 +14,7 @@ RUN npm install --omit=dev
 
 FROM base AS runner
 
-WORKDIR app/
+WORKDIR /app
 
 ENV NODE_ENV=production
 
