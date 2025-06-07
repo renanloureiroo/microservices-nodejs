@@ -1,0 +1,61 @@
+_format_version: "3.0"
+_transform: true
+
+services:
+  - name: orders
+    url: http://host.docker.internal:3333
+    protocol: http
+    host: host.docker.internal
+    port: 3333
+    path: /
+    connect_timeout: 60000
+    retries: 3
+    routes:
+      - name: api-orders
+        protocols:
+          - http
+          - https
+        paths:
+          - /orders
+  - name: invoices
+    url: http://host.docker.internal:3334
+    protocol: http
+    host: host.docker.internal
+    port: 3333
+    path: /
+    connect_timeout: 60000
+    retries: 3
+    routes:
+      - name: api-invoices
+        protocols:
+          - http
+          - https
+        paths:
+          - /invoices
+
+plugins:
+  - name: cors
+    config:
+      origins:
+        - "*"
+      methods:
+        - "GET"
+        - "POST"
+        - "PUT"
+        - "PATCH"
+        - "DELETE"
+        - "OPTIONS"
+      headers:
+        - "Content-Type"
+        - "Authorization"
+        - "Accept"
+        - "Origin"
+        - "Access-Control-Allow-Origin"
+        - "Access-Control-Allow-Methods"
+        - "Access-Control-Allow-Headers"
+        - "Access-Control-Allow-Credentials"
+        - "Access-Control-Max-Age"
+        - "Access-Control-Expose-Headers"
+        - "Access-Control-Request-Method"
+        - "Access-Control-Request-Headers"
+        - "Access-Control-Allow-Origin"

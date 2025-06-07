@@ -1,0 +1,10 @@
+name: node-infra-event
+description: node-infra-event
+runtime:
+  name: nodejs
+  options:
+    packagemanager: npm
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: aws-typescript

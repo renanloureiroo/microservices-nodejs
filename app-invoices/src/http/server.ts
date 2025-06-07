@@ -23,7 +23,7 @@ app.get("/health", () => {
   return "OK";
 });
 
-app.listen({ host: "0.0.0.0", port: 3333 }, (err, address) => {
+app.listen({ host: "0.0.0.0", port: 3334 }, (err, address) => {
   if (err) {
     app.log.error(err);
   }
